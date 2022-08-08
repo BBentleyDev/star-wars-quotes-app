@@ -1,10 +1,11 @@
 const express = require('express');
 const bodyParser= require('body-parser')
 const MongoClient = require('mongodb').MongoClient
-const connectionString = 'mongodb+srv://master:yoda@cluster0.evvfb.mongodb.net/?retryWrites=true&w=majority'
 const app = express();
+const PORT = 3000
 
-
+require('dotenv').config()
+const connectionString = process.env.DB_STRING
 
 MongoClient.connect(connectionString, { useUnifiedTopology: true })
   .then(client => {
@@ -14,8 +15,8 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true })
 
     app.set('view engine', 'ejs')
     app.use(bodyParser.urlencoded({ extended: true }))
-    app.use(express.static('public'))
     app.use(bodyParser.json())
+    app.use(express.static('public'))
 
     app.get('/', (req, res) => {
         db.collection('quotes').find().toArray()
@@ -65,8 +66,8 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true })
         .catch(error => console.error(error))
     })
     
-    app.listen(3000, function() {
-        console.log('listening on 3000')
+    app.listen(process.env.PORT || PORT, function() {
+        console.log(`listening on ${PORT}`)
     })
   })
   .catch(error => console.error(error))
